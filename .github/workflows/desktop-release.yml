@@ -156,20 +156,36 @@ jobs:
           body: |
             # DSH Studio ${{ steps.facts.outputs.version }}
 
-            **English**
+            DSH Studio brings the DeepSeek Harness Web UI, runtime, and plugin management into a desktop application.
 
-            DSH Studio — an unofficial community desktop client for DeepSeek Harness.
+            ## Downloads
 
-            - Installers: macOS arm64 DMG and Windows x64 NSIS (download guide: ${{ steps.facts.outputs.docs }}/apps/desktop/docs/download.md).
-            - The alpha installers are **unsigned**; Gatekeeper and SmartScreen warnings are expected (security notes: ${{ steps.facts.outputs.docs }}/apps/desktop/docs/security.md).
-            - Bundled Harness version: ${{ steps.facts.outputs.harness_version }} (from the attached `runtime-manifest-*.json` files).
-            - Verify `SHA256SUMS.txt` before installing.
+            - **macOS arm64:** `DSH Studio-${{ steps.facts.outputs.version }}-mac-arm64.dmg`
+            - **Windows x64:** `DSH Studio-${{ steps.facts.outputs.version }}-win-x64.exe`
 
-            **中文**
+            ## Highlights
 
-            DSH Studio —— DeepSeek Harness 的非官方社区桌面客户端。
+            - Bundled Harness Web UI and pinned runtime
+            - Supervised startup, restart, crash recovery, and diagnostics
+            - Discover and Manage views for Harness plugins
+            - Runtime manifests and `SHA256SUMS.txt` for both platforms
 
-            - 安装程序：macOS arm64 DMG 与 Windows x64 NSIS（下载指南：${{ steps.facts.outputs.docs }}/apps/desktop/docs/download.zh.md）。
-            - alpha 安装程序**未签名**；Gatekeeper 与 SmartScreen 警告属预期（安全说明：${{ steps.facts.outputs.docs }}/apps/desktop/docs/security.zh.md）。
-            - 内置 Harness 版本：${{ steps.facts.outputs.harness_version }}（见附件 `runtime-manifest-*.json`）。
-            - 安装前请校验 `SHA256SUMS.txt`。
+            Bundled Harness version: `${{ steps.facts.outputs.harness_version }}`. Verify downloads with `SHA256SUMS.txt`. These alpha packages are unsigned; installation details are in the [download guide](${{ steps.facts.outputs.docs }}/apps/desktop/docs/download.md) and [security notes](${{ steps.facts.outputs.docs }}/apps/desktop/docs/security.md).
+
+            ---
+
+            DSH Studio 将 DeepSeek Harness Web UI、运行时和插件管理带到桌面端。
+
+            ## 下载
+
+            - **macOS arm64：** `DSH Studio-${{ steps.facts.outputs.version }}-mac-arm64.dmg`
+            - **Windows x64：** `DSH Studio-${{ steps.facts.outputs.version }}-win-x64.exe`
+
+            ## 主要功能
+
+            - 内置 Harness Web UI 与固定版本运行时
+            - 启动托管、重启、崩溃恢复与诊断导出
+            - Harness 插件「发现」与「管理」界面
+            - 双平台运行时清单与 `SHA256SUMS.txt`
+
+            内置 Harness 版本：`${{ steps.facts.outputs.harness_version }}`。请使用 `SHA256SUMS.txt` 校验下载文件。alpha 安装包尚未签名；安装方法见[下载指南](${{ steps.facts.outputs.docs }}/apps/desktop/docs/download.zh.md)与[安全说明](${{ steps.facts.outputs.docs }}/apps/desktop/docs/security.zh.md)。

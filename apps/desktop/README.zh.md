@@ -2,9 +2,7 @@
 
 [English](README.md) | 中文
 
-*DeepSeek Harness 的非官方桌面客户端。*
-
-DSH Studio 与 DeepSeek 无关联，亦未获其背书。
+*DeepSeek Harness 桌面客户端。*
 
 本 workspace 包含 DSH Studio Electron 壳及其打包的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 运行时。仓库根 [README](../../README.md) 是产品入口；本文是实现参考。
 

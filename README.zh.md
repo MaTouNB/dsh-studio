@@ -2,11 +2,7 @@
 
 [English](README.md) | 中文
 
-*基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的非官方社区桌面客户端。*
-
-DSH Studio 与 DeepSeek 无关联，亦未获其背书。项目目前处于 alpha 阶段，安装包尚未签名。
-
-![DSH Studio 演示](apps/desktop/docs/demo.gif)
+*[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 桌面客户端，内置运行时与插件管理。*
 
 ## 功能
 

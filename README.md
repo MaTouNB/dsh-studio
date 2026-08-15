@@ -2,11 +2,7 @@
 
 English | [中文](README.zh.md)
 
-*An unofficial community desktop client for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).*
-
-DSH Studio is not affiliated with or endorsed by DeepSeek. The project is in alpha, and its installers are unsigned.
-
-![DSH Studio demonstration](apps/desktop/docs/demo.gif)
+*A desktop client for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness), with a bundled runtime and plugin management.*
 
 ## What it provides
 

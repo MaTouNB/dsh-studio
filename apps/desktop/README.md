@@ -2,9 +2,7 @@
 
 English | [中文](README.zh.md)
 
-*An unofficial desktop client for DeepSeek Harness.*
-
-DSH Studio is not affiliated with or endorsed by DeepSeek.
+*A desktop client for DeepSeek Harness.*
 
 This workspace contains the DSH Studio Electron shell and its packaged [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) runtime. The repository root [README](../../README.md) is the product entry point; this document is the implementation reference.
 
