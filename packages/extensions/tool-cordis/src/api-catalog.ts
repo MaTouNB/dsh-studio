@@ -2084,6 +2084,18 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         returns: 'the disposer removing the transform.',
       },
       {
+        signature: 'registerRequestGuard(guard: WebRequestGuard): () => void',
+        description: 'Register a request guard. Guards run before every route dispatch, in registration order; a `false` verdict short-circuits the chain and the guard owns the response. A guard throwing is contained like a handler throw: logged as a warning and answered 400 (or the socket destroyed).',
+        parameters: [{ name: 'guard', description: 'the request policy check.' }],
+        returns: 'the disposer removing the guard.',
+      },
+      {
+        signature: 'registerUpgradeGuard(guard: WebUpgradeGuard): () => void',
+        description: 'Register an upgrade guard. Guards run before every upgrade dispatch, in registration order; a `false` verdict owns the socket (the guard wrote the rejection and must destroy or answer the socket itself).',
+        parameters: [{ name: 'guard', description: 'the upgrade policy check.' }],
+        returns: 'the disposer removing the guard.',
+      },
+      {
         signature: 'applyIndexTaps(html: string): string',
         description: 'Run an index.html body through the registered taps in registration order — called by the fallback owner on every index response it renders.',
         parameters: [{ name: 'html', description: 'the raw index.html body.' }],
@@ -4558,6 +4570,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface WebFetchResultView {\n    card: \'web\';\n    kind: \'fetch\';\n    title?: string;\n    url: string;\n    statusCode: number;\n    truncated: boolean;\n}',
   },
   {
+    name: 'WebRequestGuard',
+    declaration: 'export type WebRequestGuard = (req: IncomingMessage, res: ServerResponse) => boolean | Promise<boolean>;',
+  },
+  {
     name: 'WebResultView',
     declaration: 'export type WebResultView = WebSearchResultView | WebFetchResultView;',
   },
@@ -4592,6 +4608,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'WebSource',
     declaration: 'export interface WebSource {\n    url: string;\n    title?: string;\n    snippet?: string;\n    publishedAt?: string;\n}',
+  },
+  {
+    name: 'WebUpgradeGuard',
+    declaration: 'export type WebUpgradeGuard = (req: IncomingMessage, socket: Duplex, head: Buffer) => boolean | Promise<boolean>;',
   },
   {
     name: 'WebUpgradeRoute',

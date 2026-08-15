@@ -7,6 +7,10 @@ packages:
   - native/landlock-run/packages/*
   # Product assemblies over the package tier; apps/cli owns the `dsh` bin.
   - apps/*
+  # The Desktop integration bundle is a profile bundle staged into the
+  # packaged runtime, and a workspace member so the source checkout can boot
+  # the desktop profile too.
+  - apps/desktop/bundle
   - website
   # The runnable demo leaves join as ONE workspace member: examples/package.json
   # declares the union of every leaf's cordis.yml plugins as workspace:*, so a
@@ -40,6 +44,10 @@ peerDependencyRules:
 allowBuilds:
   esbuild: true
   lefthook: true
+  # Electron downloads its platform binary in postinstall; DSH Studio's
+  # desktop workspace needs it for packaging, and the electron-builder cache
+  # keeps the download local after the first install.
+  electron: true
   # Cross-platform boundary for the persistent PTY backend, including ConPTY on Windows.
   node-pty: true
   # Pulled in by @earendil-works/pi-ai (optional LLM API backend). pnpm lists
@@ -53,6 +61,7 @@ allowBuilds:
   # The Python runtime deploy includes the reviewed workspace postinstall that
   # restores the executable bit on node-pty's macOS spawn helper.
   '@deepseek-ai/dsh-subprocess-local@file:packages/subprocess/subprocess-local': true
+  electron-winstaller: set this to true or false
 
 minimumReleaseAgeExclude:
   # Fresh pi-ai releases carry the model catalog updates that are the whole

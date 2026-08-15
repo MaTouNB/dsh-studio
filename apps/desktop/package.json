@@ -1,0 +1,35 @@
+{
+  "name": "@deepseek-ai/dsh-desktop",
+  "description": "DSH Studio — An unofficial desktop client for DeepSeek Harness (not affiliated with or endorsed by DeepSeek)",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "DSH Studio contributors",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "tsc -b bundle && pnpm --filter @deepseek-ai/dsh-client-ui-settings-plugin-center run bundle && tsc -b tsconfig.json && tsdown && tsdown -c tsdown.preload.config.ts",
+    "test": "vitest run",
+    "lint": "oxlint .",
+    "stage": "tsx scripts/stage-runtime.ts",
+    "package:mac": "electron-builder --mac",
+    "package:win": "electron-builder --win",
+    "checksums": "tsx scripts/write-checksums.ts",
+    "smoke:mac": "tsx scripts/smoke-packaged.ts",
+    "smoke:installed:win": "tsx scripts/smoke-installed-win.ts",
+    "verify:release": "tsx scripts/verify-release.ts"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-desktop-integration": "workspace:^",
+    "@types/js-yaml": "^4.0.9",
+    "electron": "^40.10.6",
+    "electron-builder": "^26.15.3",
+    "js-yaml": "^4.2.0",
+    "tsdown": "^0.22.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

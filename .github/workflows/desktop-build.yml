@@ -1,0 +1,121 @@
+# DSH Studio packaging drill: build both installers on their native runners
+# from the same commit, with an immutable toolchain install, and upload the
+# installers, checksums, and runtime manifests as pull-request evidence. The
+# release sequence (desktop-release.yml) reuses this matrix from a desktop-v*
+# tag; only that workflow's release job can write repository contents.
+name: Desktop build drill
+
+on:
+  pull_request:
+    paths:
+      - 'apps/desktop/**'
+      - 'packages/client/ui-settings-plugin-center/**'
+      - 'packages/bundle/web-app/**'
+      - 'packages/bundle/base/**'
+      - '.github/workflows/desktop-build.yml'
+      - '.github/workflows/desktop-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PRIMARY_NODE_VERSION: '24'
+  # CI runs must never report to the production telemetry endpoint.
+  DSH_TELEMETRY_DISABLED: '1'
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS arm64
+            os: macos-15
+            platform: mac-arm64
+            package: package:mac
+            smoke: smoke:mac
+          - name: Windows x64
+            os: windows-2025
+            platform: win-x64
+            package: package:win
+            smoke: smoke:installed:win
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          dest: ${{ runner.temp }}/setup-pnpm
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.PRIMARY_NODE_VERSION }}
+
+      - name: Configure pnpm store path
+        id: pnpm-store
+        run: |
+          store_root="$HOME/.local/share/pnpm/store"
+          echo "PNPM_CONFIG_STORE_DIR=$store_root" >> "$GITHUB_ENV"
+          store_path=$(PNPM_CONFIG_STORE_DIR="$store_root" pnpm store path --silent)
+          echo "path=$store_path" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/Library/Caches/electron-builder
+            ~/Library/Caches/electron
+            $LOCALAPPDATA/electron-builder/Cache
+            $LOCALAPPDATA/electron/Cache
+          key: ${{ runner.os }}-electron-builder-${{ hashFiles('apps/desktop/package.json') }}
+
+      - name: Install (immutable)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace artifacts
+        run: pnpm run build
+
+      - name: Stage the runtime
+        run: pnpm --filter @deepseek-ai/dsh-desktop run stage
+
+      - name: Package the installer
+        run: pnpm --filter @deepseek-ai/dsh-desktop run ${{ matrix.package }}
+
+      - name: Write checksums
+        run: pnpm --filter @deepseek-ai/dsh-desktop run checksums
+
+      - name: Verify release facts
+        run: pnpm --filter @deepseek-ai/dsh-desktop run verify:release -- --platform=${{ matrix.platform }}
+
+      - name: Smoke the built artifact
+        run: pnpm --filter @deepseek-ai/dsh-desktop run ${{ matrix.smoke }}
+
+      - name: Copy runtime manifest
+        run: cp apps/desktop/staging/${{ matrix.platform }}/runtime-manifest.json apps/desktop/dist/runtime-manifest-${{ matrix.platform }}.json
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-studio-${{ matrix.platform }}
+          path: |
+            apps/desktop/dist/*.dmg
+            apps/desktop/dist/*.exe
+            apps/desktop/dist/*.blockmap
+            apps/desktop/dist/SHA256SUMS.txt
+            apps/desktop/dist/runtime-manifest-${{ matrix.platform }}.json
+          if-no-files-found: error
+          retention-days: 7

@@ -224,3 +224,96 @@ describe('real Loader composition', () => {
     }
   })
 })
+
+describe('request and upgrade guards', () => {
+  it('run before dispatch, in order, and short-circuit when a guard denies', { timeout: 60_000 }, async () => {
+    const loaded = await loadComposition()
+    const server = loaded.webServer
+    const port = server.port
+    server.register({ kind: 'exact', path: '/probe', handler: (_req, res) => { res.writeHead(200); res.end('OPEN') } })
+    const seen: string[] = []
+    const deny = server.registerRequestGuard((req, res) => {
+      seen.push(`first:${req.url ?? ''}`)
+      if (req.url?.includes('deny')) {
+        res.writeHead(403)
+        res.end('DENIED')
+        return false
+      }
+      return true
+    })
+    const second = server.registerRequestGuard((req) => {
+      seen.push(`second:${req.url ?? ''}`)
+      return true
+    })
+    expect(await request(port, '/probe')).toMatchObject({ status: 200, body: 'OPEN' })
+    expect(await request(port, '/deny')).toMatchObject({ status: 403, body: 'DENIED' })
+    expect(seen).toEqual(['first:/probe', 'second:/probe', 'first:/deny'])
+    deny()
+    second()
+    expect(await request(port, '/deny')).toMatchObject({ status: 404 })
+  })
+
+  it('contains guard throws like handler throws', { timeout: 60_000 }, async () => {
+    const loaded = await loadComposition()
+    const server = loaded.webServer
+    const port = server.port
+    server.register({ kind: 'exact', path: '/probe', handler: (_req, res) => { res.writeHead(200); res.end('OPEN') } })
+    const boom = server.registerRequestGuard(() => { throw new Error('guard exploded') })
+    expect((await request(port, '/probe')).status).toBe(400)
+    boom()
+    expect(await request(port, '/probe')).toMatchObject({ status: 200, body: 'OPEN' })
+  })
+
+  it('guard upgrades before dispatch; denial owns the socket', { timeout: 60_000 }, async () => {
+    const loaded = await loadComposition()
+    const server = loaded.webServer
+    const port = server.port
+    const upgrades = server.registerUpgrade({
+      path: '/events',
+      handler: (req, socket) => {
+        socket.write('HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: dsh-test\r\n\r\n')
+        socket.write(`upgraded:${req.url ?? ''}`)
+      },
+    })
+    const deny = server.registerUpgradeGuard((req, socket) => {
+      if (req.url?.includes('deny')) {
+        socket.write('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n')
+        socket.destroy()
+        return false
+      }
+      return true
+    })
+    const allowedSocket = connect(port, '127.0.0.1')
+    await once(allowedSocket, 'connect')
+    const allowedResponse = once(allowedSocket, 'data')
+    allowedSocket.write([
+      'GET /events HTTP/1.1',
+      `Host: 127.0.0.1:${String(port)}`,
+      'Connection: Upgrade',
+      'Upgrade: dsh-test',
+      '',
+      '',
+    ].join('\r\n'))
+    const [allowedData] = await allowedResponse as [Buffer]
+    expect(String(allowedData)).toContain('101 Switching Protocols')
+    expect(String(allowedData)).toContain('upgraded:/events')
+    allowedSocket.destroy()
+
+    const deniedSocket = connect(port, '127.0.0.1')
+    await once(deniedSocket, 'connect')
+    const deniedResponse = once(deniedSocket, 'data')
+    deniedSocket.write([
+      'GET /deny HTTP/1.1',
+      `Host: 127.0.0.1:${String(port)}`,
+      'Connection: Upgrade',
+      'Upgrade: dsh-test',
+      '',
+      '',
+    ].join('\r\n'))
+    const [deniedData] = await deniedResponse as [Buffer]
+    expect(String(deniedData)).toContain('403')
+    deniedSocket.destroy()
+    upgrades()
+    deny()
+  })
+})

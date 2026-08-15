@@ -1,0 +1,7 @@
+# Desktop-only plugin-center UI row: the browser half of the plugin-center
+# package (its host half is a no-op), inserted for the assembled desktop
+# surface. The tabs read the window.dshStudio bridge only the Electron shell
+# provides; the browser scenario stubs it via addInitScript.
+- insert:
+    - id: desktop-plugin-center
+      name: '@deepseek-ai/dsh-client-ui-settings-plugin-center'

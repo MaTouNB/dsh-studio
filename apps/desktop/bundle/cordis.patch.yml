@@ -1,0 +1,15 @@
+# DSH Studio desktop integration bundle patch: the per-launch loopback
+# authentication plugin, plus the desktop-only plugin-center UI row (the
+# browser half of @deepseek-ai/dsh-client-ui-settings-plugin-center, which is
+# desktop-gated: its tabs read the window.dshStudio bridge only the Electron
+# shell provides). The Electron shell passes DSH_DESKTOP_SECRET through the
+# child environment and navigates the window to /desktop-bootstrap; the
+# guards below then require the exchanged cookie on every other request.
+- insert:
+    - id: desktop-auth
+      name: '@deepseek-ai/dsh-desktop-integration'
+      config:
+        secretEnv: DSH_DESKTOP_SECRET
+- insert:
+    - id: desktop-plugin-center
+      name: '@deepseek-ai/dsh-client-ui-settings-plugin-center'

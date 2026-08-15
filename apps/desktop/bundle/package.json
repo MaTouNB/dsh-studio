@@ -1,0 +1,25 @@
+{
+  "name": "@deepseek-ai/dsh-desktop-integration",
+  "description": "DSH Studio desktop integration bundle: per-launch loopback authentication for the desktop profile",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./auth": "./lib/auth.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.0"
+  }
+}

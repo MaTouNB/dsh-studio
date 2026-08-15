@@ -1,0 +1,37 @@
+# DSH Studio Electron Builder configuration.
+# `main` and `files` describe the Electron shell; the staged runtime lands in
+# Resources/runtime through extraResources (see scripts/stage-runtime.ts).
+# Target archives and the SHA256SUMS.txt sidecar come from the package:mac /
+# package:win scripts. Publish and auto-update stay off for the unsigned alpha.
+appId: io.github.matounb.dsh-studio
+productName: DSH Studio
+directories:
+  buildResources: build
+  output: dist
+files:
+  - lib/**/*
+  - package.json
+asar: true
+npmRebuild: false
+extraResources:
+  - from: staging/${os}-${arch}
+    to: runtime
+    filter:
+      - '**/*'
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+mac:
+  category: public.app-category.developer-tools
+  identity: null
+  target:
+    - target: dmg
+      arch:
+        - arm64
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+publish: null

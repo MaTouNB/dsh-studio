@@ -38,11 +38,11 @@ interface Config {
 }
 ```
 
-`host` 只接受 `127.0.0.1`（默认姿态）和 `0.0.0.0`（刻意的网络暴露）；没有 TLS、认证或 origin 策略，因此绑定到非回环地址会把服务器暴露给该网络。dist 位置是认领席位的前端插件的组装事实。
+`host` 只接受 `127.0.0.1`（默认姿态）和 `0.0.0.0`（刻意的网络暴露）；载体本身没有 TLS、认证或 origin 策略，因此绑定到非回环地址会把服务器暴露给该网络。策略是组合层职责：`registerRequestGuard` / `registerUpgradeGuard` 在分发前执行，Desktop profile 的回环鉴权 bundle 用它们要求每个请求携带每次启动生成的 cookie、状态变更请求携带预期的回环 Origin。dist 位置是认领席位的前端插件的组装事实。
 
 ## 服务
 
-`WebServer`（`ctx.webServer`）在激活时立即监听；监听失败（EADDRINUSE 等）会使初始化被拒绝，启动进程会报告失败的 fiber。`register(route)` 添加一条具名路由并返回其 disposer；重复的 `(kind, path)` 抛出异常，因为路由模式是组合层约定，冲突即配置错误。`tapIndex(transform)` 添加一个纯 HTML 到 HTML 转换函数，按注册顺序应用于每个 index 响应（`/` 和每次 SPA 回退）；[dsh-client-modules](../../packages/client/modules) 用它注入启动 manifest（元数据清单）。`port` 读取监听端口，包括 `config.port` 为 0 时操作系统分配的端口。
+`WebServer`（`ctx.webServer`）在激活时立即监听；监听失败（EADDRINUSE 等）会使初始化被拒绝，启动进程会报告失败的 fiber。`register(route)` 添加一条具名路由并返回其 disposer；重复的 `(kind, path)` 抛出异常，因为路由模式是组合层约定，冲突即配置错误。`registerRequestGuard(guard)` 与 `registerUpgradeGuard(guard)` 添加策略检查，按注册顺序在每次 HTTP 或 upgrade 分发前执行；返回 `false` 时守卫拥有响应或 socket（由它写出拒绝），返回 `true` 则继续到下一个守卫再进入路由。`tapIndex(transform)` 添加一个纯 HTML 到 HTML 转换函数，按注册顺序应用于每个 index 响应（`/` 和每次 SPA 回退）；[dsh-client-modules](../../packages/client/modules) 用它注入启动 manifest（元数据清单）。`port` 读取监听端口，包括 `config.port` 为 0 时操作系统分配的端口。
 
 处理过程中抛出异常的请求（畸形的 % 转义撞上 `decodeURIComponent`、客户端在请求体中途断开）会记录为警告并应答 400（响应头已发出时则销毁 socket），绝不导致进程退出。dispose（资源释放）把 `close()` 与 `closeAllConnections()` 配对使用，因为处理器可能像 SSE（Server-Sent Events）那样保持响应打开，而这类连接永远不会自行结束；没有强制关闭，拆卸就会挂起。该包从不打印输出：URL 行归 shell 所有。逐包运维细节（含开发模式的 bundle 监视流水线）留在 [README](../../packages/host/webserver/README.md) 中。
 
@@ -96,6 +96,25 @@ registerFallback(handler: WebRoute['handler']): () => void
 tapIndex(transform: (html: string) => string): () => void
 
 /**
+ * Register a request guard. Guards run before every route dispatch, in
+ * registration order; a `false` verdict short-circuits the chain and the
+ * guard owns the response. A guard throwing is contained like a handler
+ * throw: logged as a warning and answered 400 (or the socket destroyed).
+ * @param guard - the request policy check.
+ * @returns the disposer removing the guard.
+ */
+registerRequestGuard(guard: WebRequestGuard): () => void
+
+/**
+ * Register an upgrade guard. Guards run before every upgrade dispatch, in
+ * registration order; a `false` verdict owns the socket (the guard wrote
+ * the rejection and must destroy or answer the socket itself).
+ * @param guard - the upgrade policy check.
+ * @returns the disposer removing the guard.
+ */
+registerUpgradeGuard(guard: WebUpgradeGuard): () => void
+
+/**
  * Run an index.html body through the registered taps in registration order
  * — called by the fallback owner on every index response it renders.
  * @param html - the raw index.html body.
@@ -104,5 +123,5 @@ tapIndex(transform: (html: string) => string): () => void
 applyIndexTaps(html: string): string
 ```
 
-Source: [`packages/host/webserver/src/index.ts:59`](../../packages/host/webserver/src/index.ts)
+Source: [`packages/host/webserver/src/index.ts:75`](../../packages/host/webserver/src/index.ts)
 <!-- END GENERATED cordis-surface -->

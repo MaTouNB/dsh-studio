@@ -159,6 +159,8 @@ export const TRANSLATION_SCOPE_GLOB_EXCLUDES = [
   '**/__pycache__/**',
   '**/.pytest_cache/**',
   'apps/web/dist/**',
+  'apps/desktop/staging/**',
+  'apps/desktop/dist/**',
   '.artifacts/**',
   'python/sdk-runtime/src/deepseek_harness_runtime/runtime/dsh-jsonrpc-agent-*/**',
   'python/sdk-runtime/src/deepseek_harness_runtime/runtime/node/**',

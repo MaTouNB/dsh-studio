@@ -1,0 +1,5 @@
+- tablist "插件视图":
+  - tab "插件配置" [selected]
+  - tab "发现"
+  - tab "管理"
+  - tab "插件列表"

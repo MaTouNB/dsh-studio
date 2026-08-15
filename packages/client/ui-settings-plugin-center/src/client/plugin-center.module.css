@@ -1,0 +1,257 @@
+.tab {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notice {
+  border: 1px solid var(--border, #444);
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--text-secondary, #999);
+}
+
+.searchRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #444);
+  background: var(--input-bg, #1c1c1c);
+  color: var(--text, #eee);
+}
+
+.searchInput:focus-visible {
+  outline: 2px solid var(--accent, #4f8cff);
+  outline-offset: 1px;
+}
+
+.button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #444);
+  background: var(--button-bg, #26262b);
+  color: var(--text, #eee);
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--accent, #4f8cff);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--accent, #4f8cff);
+  outline-offset: 1px;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.buttonPrimary {
+  background: var(--accent, #4f8cff);
+  border-color: var(--accent, #4f8cff);
+  color: #fff;
+}
+
+.status {
+  color: var(--text-secondary, #999);
+  font-size: 0.9em;
+}
+
+.error {
+  color: var(--danger, #ff6b6b);
+  font-size: 0.9em;
+}
+
+.rateLimit {
+  color: var(--warning, #e6b450);
+  font-size: 0.85em;
+}
+
+.hits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hit {
+  border: 1px solid var(--border, #444);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.hitButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.hitButton:focus-visible {
+  outline: 2px solid var(--accent, #4f8cff);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.hitTitle {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-weight: 600;
+}
+
+.hitMeta {
+  color: var(--text-secondary, #999);
+  font-size: 0.85em;
+}
+
+.pagination {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.candidate {
+  border: 1px solid var(--border, #444);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.candidateTitle {
+  font-weight: 600;
+}
+
+.factRow {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9em;
+  color: var(--text-secondary, #999);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialogBox {
+  background: var(--dialog-bg, #222);
+  border: 1px solid var(--border, #444);
+  border-radius: 10px;
+  padding: 18px;
+  max-width: 480px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dialogTitle {
+  font-weight: 600;
+}
+
+.dialogBody {
+  color: var(--text-secondary, #ccc);
+  font-size: 0.95em;
+  word-break: break-word;
+}
+
+.scriptList {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-family: var(--mono, monospace);
+  font-size: 0.9em;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.installedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.installedRow {
+  border: 1px solid var(--border, #444);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.installedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.installedName {
+  font-weight: 600;
+}
+
+.tag {
+  font-size: 0.8em;
+  border: 1px solid var(--border, #444);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--text-secondary, #999);
+}
+
+.operationsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.operationsTable th,
+.operationsTable td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border, #333);
+}
+
+.operationsTable th {
+  color: var(--text-secondary, #999);
+  font-weight: 500;
+}

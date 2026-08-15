@@ -27,6 +27,7 @@
     "apps/web/tests/details-session-lifecycle.e2e.ts",
     "apps/web/tests/plugin-config.e2e.ts",
     "apps/web/tests/settings-chrome.e2e.ts",
+    "apps/web/tests/plugin-center.e2e.ts",
     "apps/web/tests/models-settings.e2e.ts",
     "apps/web/tests/onboarding-deepseek-config.e2e.ts",
     "apps/web/tests/onboarding-usable-provider.e2e.ts",
@@ -83,6 +84,8 @@
     "apps/web/tests/workflow-run.e2e.ts",
     "apps/web/stress-tests/reasoning-chunks.stress.ts",
     "apps/cli/tests/**/*.ts",
+    "apps/desktop/tests/**/*.ts",
+    "apps/desktop/scripts/**/*.ts",
     "examples/*/src/**/*.ts",
     "examples/*/start.ts",
     "examples/*/tests/**/*.ts",
@@ -293,6 +296,8 @@
     { "path": "./packages/lsp/lsp" },
     { "path": "./packages/lsp/lsp-stdio" },
     { "path": "./packages/lsp/tool-lsp" },
-    { "path": "./apps/cli" }
+    { "path": "./apps/cli" },
+    { "path": "./apps/desktop" },
+    { "path": "./apps/desktop/bundle" }
   ]
 }

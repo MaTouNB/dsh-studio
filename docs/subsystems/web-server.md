@@ -38,11 +38,11 @@ interface Config {
 }
 ```
 
-`host` accepts only `127.0.0.1` (default posture) and `0.0.0.0` (deliberate network exposure); there is no TLS, auth, or origin policy, so a non-loopback bind exposes the server to that network. The dist location is an assembly fact of the frontend plugin that claims the seat.
+`host` accepts only `127.0.0.1` (default posture) and `0.0.0.0` (deliberate network exposure); the carrier itself has no TLS, auth, or origin policy, so a non-loopback bind exposes the server to that network. Policy is a composition concern: `registerRequestGuard` / `registerUpgradeGuard` run before dispatch, and the Desktop profile's loopback-authentication bundle uses them to require a per-launch cookie on every request and the expected loopback Origin on state-changing ones. The dist location is an assembly fact of the frontend plugin that claims the seat.
 
 ## The service
 
-`WebServer` (`ctx.webServer`) listens immediately on activation; a listen failure (EADDRINUSE…) rejects initialization, and the boot process reports the failed fiber. `register(route)` adds one named route and returns its disposer; a duplicate `(kind, path)` throws because route patterns are a composition-level contract and a collision is a misconfiguration. `tapIndex(transform)` adds a pure html-to-html transform applied to every index response — `/` and each SPA fallback — in registration order; [dsh-client-modules](../../packages/client/modules) uses it to inject the boot manifest. `port` reads the listening port, including the port assigned by the OS when `config.port` is 0.
+`WebServer` (`ctx.webServer`) listens immediately on activation; a listen failure (EADDRINUSE…) rejects initialization, and the boot process reports the failed fiber. `register(route)` adds one named route and returns its disposer; a duplicate `(kind, path)` throws because route patterns are a composition-level contract and a collision is a misconfiguration. `registerRequestGuard(guard)` and `registerUpgradeGuard(guard)` add policy checks that run before every HTTP or upgrade dispatch in registration order; a `false` verdict short-circuits and the guard owns the response or socket, while `true` continues to the next guard and then the route. `tapIndex(transform)` adds a pure html-to-html transform applied to every index response — `/` and each SPA fallback — in registration order; [dsh-client-modules](../../packages/client/modules) uses it to inject the boot manifest. `port` reads the listening port, including the port assigned by the OS when `config.port` is 0.
 
 A request whose handling throws (a malformed %-escape hitting `decodeURIComponent`, a client dropping mid-body) is logged as a warning and answered 400 — or the socket destroyed when headers are already out — never a process exit. Disposal pairs `close()` with `closeAllConnections()` because a handler may hold its response open (SSE) and such connections never end on their own; without the force-close, teardown would hang. The package never prints: the URL line belongs to the shell. Per-package operational detail, including the dev-mode bundle watch pipeline, stays in the [README](../../packages/host/webserver/README.md).
 
@@ -96,6 +96,25 @@ registerFallback(handler: WebRoute['handler']): () => void
 tapIndex(transform: (html: string) => string): () => void
 
 /**
+ * Register a request guard. Guards run before every route dispatch, in
+ * registration order; a `false` verdict short-circuits the chain and the
+ * guard owns the response. A guard throwing is contained like a handler
+ * throw: logged as a warning and answered 400 (or the socket destroyed).
+ * @param guard - the request policy check.
+ * @returns the disposer removing the guard.
+ */
+registerRequestGuard(guard: WebRequestGuard): () => void
+
+/**
+ * Register an upgrade guard. Guards run before every upgrade dispatch, in
+ * registration order; a `false` verdict owns the socket (the guard wrote
+ * the rejection and must destroy or answer the socket itself).
+ * @param guard - the upgrade policy check.
+ * @returns the disposer removing the guard.
+ */
+registerUpgradeGuard(guard: WebUpgradeGuard): () => void
+
+/**
  * Run an index.html body through the registered taps in registration order
  * — called by the fallback owner on every index response it renders.
  * @param html - the raw index.html body.
@@ -104,5 +123,5 @@ tapIndex(transform: (html: string) => string): () => void
 applyIndexTaps(html: string): string
 ```
 
-Source: [`packages/host/webserver/src/index.ts:59`](../../packages/host/webserver/src/index.ts)
+Source: [`packages/host/webserver/src/index.ts:75`](../../packages/host/webserver/src/index.ts)
 <!-- END GENERATED cordis-surface -->

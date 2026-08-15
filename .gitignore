@@ -38,3 +38,5 @@ apps/web/dist/
 worktrees/
 .agents/worktrees/
 .typert-*/
+apps/desktop/staging/
+apps/desktop/dist/
