@@ -6,7 +6,7 @@ English | [中文](README.zh.md)
 
 DSH Studio is not affiliated with or endorsed by DeepSeek.
 
-This workspace is the product baseline for the planned DSH Studio desktop distribution of [DeepSeek Harness](../../README.md). The roadmap, product requirements, and milestone acceptance criteria live in the product Agent Note ([English](../../.agents/notes/proposed/feature/2026-08-14-dsh-studio-desktop-product.md) | [中文](../../.agents/notes/proposed/feature/2026-08-14-dsh-studio-desktop-product.zh.md)).
+This workspace contains the DSH Studio Electron shell and its packaged [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) runtime. The repository root [README](../../README.md) is the product entry point; this document is the implementation reference.
 
 ## Download
 

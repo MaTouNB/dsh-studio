@@ -6,7 +6,7 @@
 
 DSH Studio 与 DeepSeek 无关联，亦未获其背书。
 
-本 workspace 是 [DeepSeek Harness](../../README.md) 规划中的 DSH Studio 桌面发行版的产品基线。路线图、产品要求和里程碑验收条件见产品 Agent Note（[English](../../.agents/notes/proposed/feature/2026-08-14-dsh-studio-desktop-product.md) | [中文](../../.agents/notes/proposed/feature/2026-08-14-dsh-studio-desktop-product.zh.md)）。
+本 workspace 包含 DSH Studio Electron 壳及其打包的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 运行时。仓库根 [README](../../README.md) 是产品入口；本文是实现参考。
 
 ## 下载
 
